@@ -1,0 +1,199 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste de Cartes
+{% endblock %}
+
+{% block body %}
+
+
+	<style>
+		.container {
+			display: flex;
+			justify-content: space-between;
+			padding: 20px;
+		}
+		.card-container,
+		.deck-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-around;
+		}
+		.card,
+		.deck-card {
+			cursor: pointer;
+			margin: 10px;
+			padding: 20px;
+			width: 200px;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			border-radius: 10px;
+			background: #FFF;
+			transition: transform 0.2s;
+		}
+		.card:hover,
+		.deck-card:hover {
+			transform: translateY(-5px);
+		}
+		.card img,
+		.deck-card img {
+			width: 100%;
+			height: 150px;
+			object-fit: cover;
+			border-radius: 10px;
+		}
+		.deck-container {
+			min-width: 30%;
+			border: 3px dashed #ccc;
+			padding: 10px;
+			border-radius: 10px;
+		}
+		.deck-heading {
+			text-align: center;
+			font-size: 1.5em;
+			margin-bottom: 20px;
+		}
+		.pagination {
+			text-align: center;
+			margin-top: 20px;
+		}
+
+		.pagination button {
+			background-color: #007BFF; /* Azul Bootstrap */
+			border: none;
+			color: white;
+			padding: 10px 20px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			border-radius: 5px;
+			transition: background-color 0.3s;
+		}
+
+		.pagination button:hover {
+			background-color: #0056b3; /* Azul Escuro */
+		}
+	</style>
+
+	<div class="container">
+		<div class="card-container" style="width: 65%;">
+			{% for carte in cartes %}
+				<div class="card" onclick="addToDeck('{{ carte | json_encode | e('js') }}', this)">
+					<img src="{{ carte.image }}" alt="Image of {{ carte.name }}">
+					<h2>{{ carte.name }}</h2>
+					<p>Category:
+						{{ carte.category }}</p>
+					<p>HP:
+						{{ carte.hp }}</p>
+					<p>{{ carte.description }}</p>
+				</div>
+			{% endfor %}
+			{{ dump(cartes) }}
+		</div>
+
+		<div class="deck-container" id="deck">
+			<div class="deck-heading">Your Deck (0/40)</div>
+		</div>
+	</div>
+	<button id="saveDeckButton">Save Deck</button>
+	<div class="pagination">
+		<button onclick="window.location.href='{{ path('app_carte_view', {'page': prevPage}) }}'">Prev</button>
+		<button onclick="window.location.href='{{ path('app_carte_view', {'page': nextPage}) }}'">Next</button>
+	</div>
+	<script>
+		const deckLimit = 40;
+const deckContainer = document.getElementById('deck');
+const deckCounter = deckContainer.querySelector('.deck-heading');
+
+
+let deck = JSON.parse(localStorage.getItem('deck')) || [];
+
+
+function addToDeck(cardData, element) {
+let card = JSON.parse(cardData);
+if (deck.length<deckLimit && !deck.some(e => e.id === card.id) ) {
+deck.push(card);
+localStorage.setItem('deck', JSON.stringify(deck));
+const cardElement = element.cloneNode(true);
+cardElement.onclick = function () {
+removeFromDeck(card.id, this);
+};
+deckContainer.appendChild(cardElement);
+updateDeckCount();
+} else {
+alert("Deck is full or card is already added.");
+}
+}
+
+// enlever carte du deck
+function removeFromDeck(cardId, element) {
+deck = deck.filter(card => card.id !== cardId);
+localStorage.setItem('deck', JSON.stringify(deck));
+element.parentNode.removeChild(element);
+updateDeckCount();
+}
+
+// refresh cartes du  deck
+function updateDeckCount() {
+deckCounter.textContent = `Your Deck (${
+deck.length
+}/40)`;
+}
+
+// Charger cartes du deck a l'ouverture de la page
+window.onload = function () {
+deck.forEach(card => {
+const cardElement = document.createElement('div');
+cardElement.className = 'card';
+cardElement.innerHTML = `
+                <img src="${
+card.image
+}" alt="Image of ${
+card.name
+}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px;">
+                <h2>${
+card.name
+}</h2>
+                <p>Category: ${
+card.category
+}</p>
+                <p>HP: ${
+card.hp
+}</p>
+                <p>${
+card.description
+}</p>
+            `;
+cardElement.onclick = function () {
+removeFromDeck(card.id, this);
+};
+deckContainer.appendChild(cardElement);
+});
+updateDeckCount();
+};
+
+document.getElementById('saveDeckButton').addEventListener('click', function () {
+const deckData = {
+cartes: deck.map(card => card.id)
+};
+
+console.log(deck);
+
+fetch('/deck/save', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(deck)
+}).then(response => response.json()).then(data => {
+if (data.success) {
+alert('Deck saved successfully!');
+// Optional: redirect or update UI
+} else {
+alert('Failed to save deck.');
+}
+}).catch(error => console.error('Error:', error));
+});
+	</script>
+{% endblock %}

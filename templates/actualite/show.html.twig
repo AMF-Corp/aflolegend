@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Actualité Aflolegend{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>{{actu.titre}}</h1>
+    
+    <p>Début : {{actu.dateDebut | format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY")}}</p>
+    <p>Fin : {{actu.dateFin | format_datetime(locale='fr',pattern="EEEE dd MMMM YYYY")}} </p>
+
+    <p>Publié par {{actu.auteur}}</p>
+
+</div>
+
+<p> Ajouter un commentaire : </p>
+{{form(form)}}
+
+<p>Liste des commentaires : </p>
+<ul>
+{% for commentaire in actu.commentaires %}
+    <li>{{commentaire.message}} écrit par {{commentaire.auteur}}</li>
+{% endfor %}
+</ul>
+<p>Voir les autres actualités : </p>
+
+
+<ul>
+    {% for actu in actus %}
+
+        <li><a href="{{ path("app_actualite_show", {id: actu.id})}}">{{actu}}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
