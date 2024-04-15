@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block body %}
-
+	{# view deck #}
 
 	<style>
 
@@ -61,7 +61,7 @@
 	</style>
 	<h1>Your Decks</h1>
 	{% for deck in decks %}
-		{{ dump(deck) }}
+		{# {{ dump(deck) }} #}
 		<h2>Deck #{{ deck.id }}</h2>
 		<ul>
 			{% for carte in deck.cartes %}
