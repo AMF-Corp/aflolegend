@@ -25,7 +25,7 @@ class CarteController extends AbstractController
 
         $query = <<<'GRAPHQL'
         {
-            cards(pagination: { page: 1, itemsPerPage: 10 }) {
+            cards{
                 hp
                 description
                 id
@@ -128,7 +128,7 @@ class CarteController extends AbstractController
     public function view(int $page = 1, SerializerInterface $serializer): Response
     {
         $apiEndpoint = 'https://api.tcgdex.net/v2/graphql';
-        $itemsPerPage = 20;
+        $itemsPerPage = 40;
 
         $query = <<<GRAPHQL
     {
