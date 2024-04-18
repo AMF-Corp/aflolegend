@@ -5,96 +5,122 @@
 
 {% block body %}
 	<style>
-		.container {
-			display: flex;
-			justify-content: space-between;
-			padding: 20px;
+		body {
+			font-family: Arial, sans-serif;
 		}
 
-		.card-container {
+		.container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-top: 20px;
+		}
+
+		.cards {
 			display: flex;
 			flex-wrap: wrap;
-			justify-content: space-around;
-			width: 65%; /* Adjust width as needed */
+			justify-content: center;
+			width: 80%;
+			margin-bottom: 20px;
 		}
 
 		.card {
 			cursor: pointer;
+			flex: 0 1 calc(20% - 20px);
 			margin: 10px;
-			padding: 20px;
-			width: calc(25% - 20px); /* 25% of container width minus margins */
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-			border-radius: 10px;
-			background: #fff;
-			transition: transform 0.2s;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background-color: #f9f9f9;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			box-shadow: 2px 2px 6px #ccc;
+			padding: 10px;
+			transition: transform 0.2s, box-shadow 0.2s;
 		}
 
 		.card:hover {
 			transform: translateY(-5px);
+			box-shadow: 4px 4px 12px #bbb;
 		}
 
 		.card img {
 			width: 100%;
-			height: 150px;
-			object-fit: cover;
-			border-radius: 10px;
+			height: auto;
+			border-radius: 5px;
 		}
 
-		.deck-container {
-			width: 30%; /* Ajuste a largura conforme necessário */
-			border: 3px dashed #ccc;
-			padding: 10px;
-			border-radius: 10px;
-			margin-left: 20px; /* Ajuste a margem conforme necessário */
-		}
-
-		.deck-heading {
-			text-align: center;
-			font-size: 1.5em;
-			margin-bottom: 20px;
+		.card h2 {
+			font-size: 16px;
+			color: #333;
 		}
 
 		.pagination {
+			position: sticky;
+			top: 10px;
+			width: 80%;
+			display: flex;
+			justify-content: space-between;
+			padding: 10px 0;
+			background: white;
+			border-radius: 5px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			z-index: 100;
+		}
+
+		.pagination button {
+			padding: 10px 15px;
+			border-radius: 5px;
+			border: none;
+			background-color: #007bff;
+			color: white;
+			cursor: pointer;
+		}
+
+		.pagination button:hover {
+			background-color: #0056b3;
+		}
+
+		.deck-container {
+			width: 80%;
+			padding: 10px;
+			border: 2px dashed #666;
+			border-radius: 10px;
 			text-align: center;
 			margin-top: 20px;
 		}
 
-		.pagination button {
-			background-color: #007bff; /* Azul */
-			border: none;
-			color: white;
-			padding: 10px 20px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 16px;
-			margin: 4px 2px;
-			cursor: pointer;
-			border-radius: 5px;
-			transition: background-color 0.3s;
+		.deck {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: start;
+			align-items: flex-start;
+			margin-top: 10px;
 		}
 
-		.pagination button:hover {
-			background-color: #0056b3; /* Azul Escuro */
+		.deck .card {
+			cursor: default;
+			margin: 5px;
+			transition: none;
+		}
+
+		.deck .card:hover {
+			transform: none;
+			box-shadow: 2px 2px 6px #ccc;
 		}
 
 		#saveDeckButton {
-			background-color: #007bff; /* Azul */
-			border: none;
+			background-color: #28a745;
 			color: white;
-			padding: 10px 20px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 16px;
-			margin: 10px auto; /* Centralize o botão horizontalmente */
-			cursor: pointer;
+			border: none;
 			border-radius: 5px;
+			padding: 10px 20px;
+			cursor: pointer;
 			transition: background-color 0.3s;
 		}
 
 		#saveDeckButton:hover {
-			background-color: #0056b3; /* Azul Escuro */
+			background-color: #218838;
 		}
 	</style>
 
@@ -102,35 +128,23 @@
 	<div class="container">
 		<div class="pagination">
 			<button onclick="window.location.href='{{ path('app_carte_view', {'page': prevPage}) }}'">Prev</button>
-
+			<button onclick="window.location.href='{{ path('app_carte_view', {'page': nextPage}) }}'">Next</button>
 		</div>
-		<div class="card-container" style="width: 65%; height:130px;">
+		<div class="cards">
 			{% for carte in cartes %}
-				{# {{ dump(carte) }} #}
-
 				<div class="card" onclick="addToDeck('{{ carte | json_encode | e('js') }}', this)">
-					<img src="{{ carte.image }}" alt="Image of {{ carte.name }}">
+					<img src="{{ carte.image }}" alt="Carte de {{ carte.name }}">
 					<h2>{{ carte.name }}</h2>
-					<p>Category:
-						{{ carte.category }}</p>
-					<p>HP:
+					<p>{{ carte.category }}
+						| HP:
 						{{ carte.hp }}</p>
-					{% if carte.description %}
-						<p>Description:</p>
-						<p>{{ carte.description }}</p>
-					{% else %}
-						<p>Aucune description disponible.</p>
-					{% endif %}
 				</div>
 			{% endfor %}
 		</div>
-		<div class="pagination">
-			<button onclick="window.location.href='{{ path('app_carte_view', {'page': nextPage}) }}'">Next</button>
-
-		</div>
-		<div class="deck-container" id="deck">
+		<div class="deck-container">
 			<div class="deck-heading">Your Deck (0/40)</div>
-			<button id="saveDeckButton">Save Deck</button>
+			<div class="deck" id="deck"></div>
+			<button id="saveDeckButton" onclick="saveDeck()">Save Deck</button>
 		</div>
 	</div>
 
@@ -169,9 +183,9 @@ updateDeckCount();
 
 // refresh cartes du  deck
 function updateDeckCount() {
-deckCounter.textContent = `Your Deck (${
-deck.length
-}/40)`;
+var deckSize = deck.length;
+var deckHeading = document.querySelector('.deck-heading');
+deckHeading.textContent = 'Your Deck (' + deckSize + '/40)';
 }
 
 // Charger cartes du deck a l'ouverture de la page
