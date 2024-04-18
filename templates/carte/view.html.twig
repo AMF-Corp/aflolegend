@@ -128,6 +128,7 @@
 	<div class="container">
 		<div class="pagination">
 			<button onclick="window.location.href='{{ path('app_carte_view', {'page': prevPage}) }}'">Prev</button>
+			<button id="randomDeckButton" onclick="selectRandomCards()">Random 40</button>
 			<button onclick="window.location.href='{{ path('app_carte_view', {'page': nextPage}) }}'">Next</button>
 		</div>
 		<div class="cards">
@@ -144,6 +145,8 @@
 		<div class="deck-container">
 			<div class="deck-heading">Your Deck (0/40)</div>
 			<div class="deck" id="deck"></div>
+			<button id="startOverButton" onclick="startOver()">Reset Deck
+			</button>
 			<button id="saveDeckButton" onclick="saveDeck()">Save Deck</button>
 		</div>
 	</div>
@@ -181,7 +184,24 @@ element.parentNode.removeChild(element);
 updateDeckCount();
 }
 
-// refresh cartes du  deck
+function selectRandomCards() {
+// Esta função deve buscar 40 cartas aleatórias da coleção disponível
+// Esta lógica depende de como as cartas estão disponíveis em seu sistema
+alert('This will select 40 random cards');
+}
+
+// vider selection du deck
+function startOver() {
+deck = [];
+localStorage.setItem('deck', JSON.stringify(deck));
+while (deckContainer.firstChild) {
+deckContainer.removeChild(deckContainer.firstChild);
+}
+updateDeckCount();
+}
+
+
+// refresh count cartes du  deck
 function updateDeckCount() {
 var deckSize = deck.length;
 var deckHeading = document.querySelector('.deck-heading');
@@ -221,26 +241,39 @@ updateDeckCount();
 };
 
 document.getElementById('saveDeckButton').addEventListener('click', function () {
+if (deck.length === deckLimit) {
 const deckData = {
-cartes: deck.map(card => card.id)
+cartes: deck.map(card => card.id) // assegura que estamos enviando apenas os IDs das cartas
 };
 
-console.log(deck);
+console.log(deckData);
 
 fetch('/deck/save', {
 method: 'POST',
 headers: {
 'Content-Type': 'application/json'
 },
-body: JSON.stringify(deck)
-}).then(response => response.json()).then(data => {
+body: JSON.stringify(deckData) // envia os dados do baralho
+}).then(response => {
+if (!response.ok) {
+throw new Error('Network response was not ok');
+}
+return response.json();
+}).then(data => {
 if (data.success) {
 alert('Deck saved successfully!');
 // Optional: redirect or update UI
+// Exemplo: window.location.href = '/deck/success';
 } else {
-alert('Failed to save deck.');
+alert('Failed to save deck. ' + data.message);
 }
-}).catch(error => console.error('Error:', error));
+}).catch(error => {
+console.error('Error:', error);
+alert('Error saving deck: ' + error.message);
+});
+} else {
+alert('You must have 40 cards in the deck to save.');
+}
 });
 	</script>
 {% endblock %}
