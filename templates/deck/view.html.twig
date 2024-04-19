@@ -7,11 +7,14 @@
 	<div class="container">
 		<h1 class="text-center">Tes Decks</h1>
 		{% for deck in decks %}
+			{# {{dump(deck)}} #}
 			<div class="deck">
 				<h2 class="deck-title">Deck #{{ deck.id }}</h2>
 				<div class="cards">
 					{% for carte in deck.cartes %}
+						{# {{dump(carte)}} #}
 						<div class="card">
+
 							<img src="{{ carte.imageUrl }}" alt="Image de {{ carte.name }}" class="card-image">
 							<div class="card-info">
 								<h5>{{ carte.name }}</h5>
@@ -25,7 +28,11 @@
 						</div>
 					{% endfor %}
 				</div>
+
+				<button onclick="deleteDeck({{ deck.id }})" class="btn btn-danger">Delete Deck</button>
+
 			</div>
+
 		{% endfor %}
 	</div>
 {% endblock %}
@@ -100,4 +107,21 @@
 			}
 		}
 	</style>
+	<script>
+		function deleteDeck(deckId) {
+if (confirm('Are you sure you want to delete this deck?')) {
+fetch('/deck/delete/' + deckId, {method: 'DELETE'}).then(response => response.json()).then(data => {
+if (data.success) {
+alert(data.message);
+window.location.reload(); // Reload the page to update the list of decks
+} else {
+alert('Failed to delete deck: ' + data.message);
+}
+}).catch(error => {
+console.error('Error:', error);
+alert('Error deleting deck: ' + error.message);
+});
+}
+}
+	</script>
 {% endblock %}
