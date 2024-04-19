@@ -264,10 +264,10 @@ document.getElementById('saveDeckButton').addEventListener('click', function () 
 if (deck.length === deckLimit) {
 const deckData = {
 cartes: deck.map(card => ({
-uid: card.uid, // Certifique-se de que 'uid' está sendo coletado corretamente
+uid: card.id, // Certifique-se de que 'uid' está sendo coletado corretamente
 name: card.name,
 category: card.category,
-description: card.description || '', // Fornecer valor padrão se ausente
+description: card.description || '',
 hp: card.hp,
 image: card.image
 }))
