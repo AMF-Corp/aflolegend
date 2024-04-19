@@ -31,6 +31,28 @@ class DeckController extends AbstractController
         return $this->render('deck/view.html.twig', ['decks' => $decks]);
     }
 
+    // #[Route('/deck/save', name: 'deck_save', methods: ['POST'])]
+    // public function saveDeck(Request $request, EntityManagerInterface $entityManager, Security $security, SerializerInterface $serializer): Response
+    // {
+    //     $data = json_decode($request->getContent(), true);
+    //     $user = $security->getUser();
+
+    //     $deck = new Deck();
+    //     $deck->setUser($user);
+    //     $entityManager->persist($deck);
+    //     $entityManager->flush();
+
+    //     $cartes = $serializer->deserialize(json_encode($data), Carte::class . '[]', 'json');
+    //     // dd($data['cartes']);
+    //     foreach ($cartes as $carte) {
+    //         $carte->setDeck($deck);
+    //         $entityManager->persist($carte);
+    //     }
+    //     $entityManager->flush();
+
+
+    //     return new Response('Deck saved successfully with id ' . $deck->getId());
+    // }
     #[Route('/deck/save', name: 'deck_save', methods: ['POST'])]
     public function saveDeck(Request $request, EntityManagerInterface $entityManager, Security $security, SerializerInterface $serializer): Response
     {
@@ -42,15 +64,18 @@ class DeckController extends AbstractController
         $entityManager->persist($deck);
         $entityManager->flush();
 
-        $cartes = $serializer->deserialize(json_encode($data), Carte::class . '[]', 'json');
-        // dd($data['cartes']);
-        foreach ($cartes as $carte) {
-            $carte->setDeck($deck);
-            $entityManager->persist($carte);
+        foreach ($data['cartes'] as $carteId) {
+            $carte = $entityManager->getRepository(Carte::class)->find($carteId);
+            if ($carte) {
+                $carte->setDeck($deck);
+                $entityManager->persist($carte);
+            }
         }
         $entityManager->flush();
 
-
-        return new Response('Deck saved successfully with id ' . $deck->getId());
+        return $this->json([
+            'success' => true,
+            'message' => 'Deck saved successfully with id ' . $deck->getId()
+        ]);
     }
 }

@@ -278,10 +278,8 @@ return response.json();
 }).then(data => {
 if (data.success) {
 alert('Deck saved successfully!');
-// Optional: redirect or update UI
-// Exemple: window.location.href = '/deck/success';
 } else {
-alert('Failed to save deck. ' + data.message);
+alert('Failed to save deck: ' + data.message);
 }
 }).catch(error => {
 console.error('Error:', error);
