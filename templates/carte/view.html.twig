@@ -89,6 +89,10 @@
 			text-align: center;
 			margin-top: 20px;
 		}
+		.deck-heading {
+			background-color: red;
+			font-size: 32px;
+		}
 
 		.deck {
 			display: flex;
@@ -133,9 +137,6 @@
 		</div>
 		<div class="cards">
 			{% for carte in cartes %}
-
-				{# {{ dump(cartes) }} #}
-
 				<div class="card" onclick="addToDeck('{{ carte | json_encode | e('js') }}', this)">
 					<img src="{{ carte.image }}" alt="Carte de {{ carte.name }}">
 					<h2>{{ carte.name }}</h2>
@@ -151,6 +152,7 @@
 			<button id="startOverButton" onclick="startOver()">Reset Deck
 			</button>
 			<button id="saveDeckButton" onclick="saveDeck()">Save Deck</button>
+
 		</div>
 	</div>
 
@@ -248,34 +250,36 @@ card.hp
 card.description
 }</p>
             `;
+
 cardElement.onclick = function () {
 removeFromDeck(card.id, this);
 };
 deckContainer.appendChild(cardElement);
 });
 updateDeckCount();
+
 };
 
 document.getElementById('saveDeckButton').addEventListener('click', function () {
 if (deck.length === deckLimit) {
 const deckData = {
-cartes: deck.map(card => card.id)
+cartes: deck.map(card => ({
+uid: card.uid, // Certifique-se de que 'uid' está sendo coletado corretamente
+name: card.name,
+category: card.category,
+description: card.description || '', // Fornecer valor padrão se ausente
+hp: card.hp,
+image: card.image
+}))
 };
-
-console.log(deckData);
 
 fetch('/deck/save', {
 method: 'POST',
 headers: {
 'Content-Type': 'application/json'
 },
-body: JSON.stringify(deckData) // envoi données du deck
-}).then(response => {
-if (!response.ok) {
-throw new Error('Network response was not ok');
-}
-return response.json();
-}).then(data => {
+body: JSON.stringify(deckData)
+}).then(response => response.json()).then(data => {
 if (data.success) {
 alert(data.message);
 } else {
@@ -283,7 +287,7 @@ alert('Failed to save deck: ' + data.message);
 }
 }).catch(error => {
 console.error('Error:', error);
-alert('Error saving deck: ' + error.message);
+alert('Error saving deck: ' + error);
 });
 } else {
 alert('You must have 40 cards in the deck to save.');
