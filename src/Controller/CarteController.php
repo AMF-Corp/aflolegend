@@ -128,7 +128,7 @@ class CarteController extends AbstractController
     public function view(int $page = 1, SerializerInterface $serializer): Response
     {
         $apiEndpoint = 'https://api.tcgdex.net/v2/graphql';
-        $itemsPerPage = 40;
+        $itemsPerPage = 45;
 
         $query = <<<GRAPHQL
     {

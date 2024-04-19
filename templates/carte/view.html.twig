@@ -133,6 +133,9 @@
 		</div>
 		<div class="cards">
 			{% for carte in cartes %}
+
+				{# {{ dump(cartes) }} #}
+
 				<div class="card" onclick="addToDeck('{{ carte | json_encode | e('js') }}', this)">
 					<img src="{{ carte.image }}" alt="Carte de {{ carte.name }}">
 					<h2>{{ carte.name }}</h2>
@@ -184,11 +187,24 @@ element.parentNode.removeChild(element);
 updateDeckCount();
 }
 
-function selectRandomCards() {
-// Esta função deve buscar 40 cartas aleatórias da coleção disponível
-// Esta lógica depende de como as cartas estão disponíveis em seu sistema
-alert('This will select 40 random cards');
+function selectRandomCards() { // Limpa o deck atual
+startOver();
+// Reutiliza a função startOver para limpar o deck
+
+// Seleciona 40 cartas aleatoriamente
+const allCards = document.querySelectorAll('.card'); // Supõe que todas as cartas estão na classe 'card'
+let shuffledCards = Array.from(allCards); // Converte NodeList para Array para permitir embaralhamento
+shuffledCards.sort(() => 0.5 - Math.random());
+// Embaralha o array de cartas
+
+// Adiciona as primeiras 40 cartas ao deck
+shuffledCards.slice(0, 40).forEach(card => { // Aproveitando o 'onclick' para reutilizar a lógica de adicionar cartas ao deck
+card.onclick();
+});
+
+updateDeckCount(); // Atualiza a contagem de cartas no deck
 }
+
 
 // vider selection du deck
 function startOver() {
