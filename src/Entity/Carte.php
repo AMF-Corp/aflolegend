@@ -39,6 +39,7 @@ class Carte
     private ?string $uid = null;
 
     #[ORM\ManyToOne(inversedBy: 'cartes')]
+    #[ORM\JoinColumn(name: "deck_id", referencedColumnName: "id", onDelete: "CASCADE")]
     private ?Deck $deck = null;
 
     public function __construct()
