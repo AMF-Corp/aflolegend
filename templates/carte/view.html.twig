@@ -277,7 +277,7 @@ throw new Error('Network response was not ok');
 return response.json();
 }).then(data => {
 if (data.success) {
-alert('Deck saved successfully!');
+alert(data.message);
 } else {
 alert('Failed to save deck: ' + data.message);
 }
