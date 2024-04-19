@@ -187,22 +187,22 @@ element.parentNode.removeChild(element);
 updateDeckCount();
 }
 
-function selectRandomCards() { // Limpa o deck atual
+function selectRandomCards() { // Efface le deck actuel
 startOver();
-// Reutiliza a função startOver para limpar o deck
+// Réutilise la fonction startOver pour vider le deck
 
-// Seleciona 40 cartas aleatoriamente
-const allCards = document.querySelectorAll('.card'); // Supõe que todas as cartas estão na classe 'card'
-let shuffledCards = Array.from(allCards); // Converte NodeList para Array para permitir embaralhamento
+// Select 40 cartes aleatoires
+const allCards = document.querySelectorAll('.card');
+let shuffledCards = Array.from(allCards); // Convertit NodeList en Array pour permettre la lecture aléatoire
 shuffledCards.sort(() => 0.5 - Math.random());
-// Embaralha o array de cartas
+// Mélange le tableau de cartes
 
-// Adiciona as primeiras 40 cartas ao deck
-shuffledCards.slice(0, 40).forEach(card => { // Aproveitando o 'onclick' para reutilizar a lógica de adicionar cartas ao deck
+// Ajoute les 40 premières cartes au jeu
+shuffledCards.slice(0, 40).forEach(card => { // Profiter de 'onclick' pour réutiliser la logique d'ajout de cartes au deck
 card.onclick();
 });
 
-updateDeckCount(); // Atualiza a contagem de cartas no deck
+updateDeckCount(); // maj a contage de cartes du deck
 }
 
 
@@ -259,7 +259,7 @@ updateDeckCount();
 document.getElementById('saveDeckButton').addEventListener('click', function () {
 if (deck.length === deckLimit) {
 const deckData = {
-cartes: deck.map(card => card.id) // assegura que estamos enviando apenas os IDs das cartas
+cartes: deck.map(card => card.id)
 };
 
 console.log(deckData);
@@ -269,7 +269,7 @@ method: 'POST',
 headers: {
 'Content-Type': 'application/json'
 },
-body: JSON.stringify(deckData) // envia os dados do baralho
+body: JSON.stringify(deckData) // envoi données du deck
 }).then(response => {
 if (!response.ok) {
 throw new Error('Network response was not ok');
@@ -279,7 +279,7 @@ return response.json();
 if (data.success) {
 alert('Deck saved successfully!');
 // Optional: redirect or update UI
-// Exemplo: window.location.href = '/deck/success';
+// Exemple: window.location.href = '/deck/success';
 } else {
 alert('Failed to save deck. ' + data.message);
 }
