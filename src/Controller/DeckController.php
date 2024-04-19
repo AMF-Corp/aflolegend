@@ -74,7 +74,7 @@ class DeckController extends AbstractController
             $carte->setDescription($carteData['description'] ?? null);
             $carte->setHp($carteData['hp'] ?? 0);
             $carte->setImageUrl($carteData['image'] ?? 'no-image.png');
-            $carte->setUid($carteData['uid'] ?? 'no-uid');  // Fornecer um UID padrão ou tratar a ausência dele
+            $carte->setUid($carteData['uid'] ?? 'no-uid');
 
             $carte->setDeck($deck);
             $entityManager->persist($carte);
